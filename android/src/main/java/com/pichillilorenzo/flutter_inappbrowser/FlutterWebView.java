@@ -1,9 +1,12 @@
 package com.pichillilorenzo.flutter_inappbrowser;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
+import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -219,7 +222,13 @@ public class FlutterWebView implements PlatformView, MethodCallHandler  {
   @Override
   public void dispose() {
     if (webView != null) {
-      webView.setWebChromeClient(new WebChromeClient());
+      webView.setWebChromeClient(new WebChromeClient() {
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+        @Override
+        public void onPermissionRequest(final PermissionRequest request) {
+          request.grant(request.getResources());
+        }
+      });
       webView.setWebViewClient(new WebViewClient() {
         public void onPageFinished(WebView view, String url) {
           webView.destroy();
